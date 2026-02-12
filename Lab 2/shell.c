@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <sys/types.h>
@@ -98,15 +99,21 @@ int main(void)
 	 (3) If background == 0, the parent will wait,
 		o/w continues. */
 
+
         if (args[0] != NULL) {
+            if (strcmp(args[0], "exit") == 0) {
+                exit(0);
+            }
             int pid = fork();
             if (pid < 0 ) {
                 perror("fork error");
             } else if (pid == 0) {
                 execvp(args[0], args);
             } else {
-                int status;
-                waitpid(pid, &status, 0);
+                if (background == 0) {
+                    int status;
+                    waitpid(pid, &status, 0);
+                }
             }
         }
 
