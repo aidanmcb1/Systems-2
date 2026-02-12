@@ -97,5 +97,18 @@ int main(void)
 	 (2) The child process will invoke execvp(),
 	 (3) If background == 0, the parent will wait,
 		o/w continues. */
+
+        if (args[0] != NULL) {
+            int pid = fork();
+            if (pid < 0 ) {
+                perror("fork error");
+            } else if (pid == 0) {
+                execvp(args[0], args);
+            } else {
+                int status;
+                waitpid(pid, &status, 0);
+            }
+        }
+
     }
 }
