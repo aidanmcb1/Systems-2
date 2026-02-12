@@ -104,7 +104,7 @@ int main(void)
             if (strcmp(args[0], "exit") == 0) {
                 exit(0);
             }
-            int pid = fork();
+            const int pid = fork();
             if (pid < 0 ) {
                 perror("fork error");
             } else if (pid == 0) {
