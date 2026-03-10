@@ -6,6 +6,14 @@
 
 int sum = 0;
 
+void *mythread(void *arg) {
+	const int *num = (int *)arg;
+	for (int i=0; i< ARRAY_SIZE/THREAD_NO; i++) {
+		sum += num[i];
+	}
+	return NULL;
+}
+
 int main(){
     int num[THREAD_NO][ARRAY_SIZE/THREAD_NO];
 
@@ -16,6 +24,11 @@ int main(){
             num[i][j] = rand() % 100;
 	}
     }
+	pthread_t threads[THREAD_NO];
+	for(int i=0; i< THREAD_NO; i++) {
+
+		pthread_create(&threads[i], NULL, mythread, num[i]);
+	}
 
     printf("sum = %d\n", sum);
     return 0;
