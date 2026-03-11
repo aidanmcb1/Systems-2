@@ -8,9 +8,11 @@ int sum = 0;
 
 void *mythread(void *arg) {
 	const int *num = (int *)arg;
+	int working = 0;
 	for (int i=0; i< ARRAY_SIZE/THREAD_NO; i++) {
-		sum += num[i];
+		working += num[i];
 	}
+	sum += working;
 	return NULL;
 }
 
@@ -27,7 +29,11 @@ int main(){
 	pthread_t threads[THREAD_NO];
 	for(int i=0; i< THREAD_NO; i++) {
 
-		pthread_create(&threads[i], NULL, mythread, num[i]);
+		pthread_create(&threads[i], nullptr, mythread, num[i]);
+	}
+
+	for (int i=0; i< THREAD_NO; i++) {
+		pthread_join(threads[i], nullptr);
 	}
 
     printf("sum = %d\n", sum);

@@ -1,0 +1,3 @@
+B.
+the answer is 49496438. it reported all over the place but mostly 0 before i added the join loop because the main thread was racing to the print statement before the math was done.
+I made the threads all have their own working sums to reduce simultaneous overwrites.
