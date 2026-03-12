@@ -1,3 +1,6 @@
 B.
-the answer is 49496438. it reported all over the place but mostly 0 before i added the join loop because the main thread was racing to the print statement before the math was done.
-I made the threads all have their own working sums to reduce simultaneous overwrites.
+runs:11921607 12019036 11340684 5685609 11480615 10437544 7977054 10138549 12061171 9830937
+the answer is 49496438
+i added the join loop so it didnt report 0 every time because the main thread is almost always faster
+multiple overwrites happening at the same time are the main reason for mismatches
+

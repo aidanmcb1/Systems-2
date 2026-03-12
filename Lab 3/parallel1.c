@@ -8,11 +8,9 @@ int sum = 0;
 
 void *mythread(void *arg) {
 	const int *num = (int *)arg;
-	int working = 0;
 	for (int i=0; i< ARRAY_SIZE/THREAD_NO; i++) {
-		working += num[i];
+		sum += num[i];
 	}
-	sum += working;
 	return NULL;
 }
 
