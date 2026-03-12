@@ -8,14 +8,15 @@ int sum = 0;
 pthread_mutex_t lock;
 
 void *compute(void *args){
-    int *num =(int *)args;
+    const int *num =(int *)args;
     int localsum = 0;
     for(int i=0; i<ARRAY_SIZE/THREAD_NO; i++){
-	localsum += num[i];
+		localsum += num[i];
     }
     pthread_mutex_lock(&lock);
     sum+=localsum;
     pthread_mutex_unlock(&lock);
+	return NULL;
 }
 
 

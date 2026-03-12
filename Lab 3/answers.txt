@@ -4,3 +4,6 @@ the answer is 49496438
 i added the join loop so it didnt report 0 every time because the main thread is almost always faster
 multiple overwrites happening at the same time are the main reason for mismatches
 
+D.
+runtime is faster in d than in c because each thread is allowed to work independently until returning its final value to the sum variable
+less waiting on a locked resource means faster computation
