@@ -4,8 +4,16 @@
 
 /* do not use any global variables in this file */
 
+struct node {
+    void *item;
+    struct node *next;
+};
+
 struct bounded_buffer{
     /* define all necessary variables here */
+    struct node *head;
+    int size;
+    int max_size;
 };
 
 /* do not change the following function definitions */
