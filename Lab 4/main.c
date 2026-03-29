@@ -9,9 +9,17 @@ void *consumer(void *ptr);
 
 int main() {
     /* initialize the queue */
-
+    const int size = 20;
+    struct bounded_buffer* buffer = (struct bounded_buffer*) malloc(sizeof(struct bounded_buffer));
+    bounded_buffer_init(buffer, size);
+    bounded_buffer_push(buffer, "test");
+    bounded_buffer_push(buffer, "test2");
+    bounded_buffer_push(buffer, "test3");
+    bounded_buffer_push(buffer, "test4");
+    bounded_buffer_push(buffer, "test5");
+    bounded_buffer_pop(buffer);
     /* create producer and consumer threads */
-	
+
     return 0;
 }
 
