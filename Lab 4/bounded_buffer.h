@@ -2,6 +2,12 @@
 #define _BOUNDED_BUFFER_H
 #include <pthread.h>
 
+#define size 5
+#define producerMessageCount 10
+#define consumerMessageCount 15
+#define producerCount 3
+#define consumerCount 2
+
 /* do not use any global variables in this file */
 
 struct node {
@@ -11,7 +17,7 @@ struct node {
 
 struct bounded_buffer{
     /* define all necessary variables here */
-    struct node *head;
+    struct node *head, *tail;
     int size;
     int max_size;
     pthread_mutex_t m;

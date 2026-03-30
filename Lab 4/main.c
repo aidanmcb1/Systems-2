@@ -1,12 +1,7 @@
 #include "bounded_buffer.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-#define size 5
-#define producerMessageCount 10
-#define consumerMessageCount 15
-#define producerCount 3
-#define consumerCount 2
+#include <unistd.h>
 
 struct bounded_buffer queue;
 
@@ -21,45 +16,50 @@ int main() {
     pthread_t producers[producerMessageCount];
     pthread_t consumers[consumerMessageCount];
     int message = 1;
-    int* messageptr = nullptr;
     int ctc = 1;
-    int* ctcptr = nullptr;
 
     for (int i = 0; i < producerCount; i++) {
-        *messageptr = message;
-        pthread_create(producers, nullptr, producer, messageptr);
+        int* msg = malloc(sizeof(int));
+        *msg = message;
+        pthread_create(&producers[i], NULL, producer, msg);
         message += producerMessageCount;
     }
 
     for (int i = 0; i < consumerCount; i++) {
-        *ctcptr = ctc;
-        pthread_create(consumers, nullptr, consumer, ctcptr);
-        ctc++;
+        int* id = malloc(sizeof(int));
+        *id = ctc++;
+        pthread_create(&consumers[i], NULL, consumer, id);
     }
 
+    sleep(5);
+
     bounded_buffer_destroy(&queue);
-    return 0;
+    exit(0);
 }
 
 /* this is the function executed by the producer thread. 
    It should generate a number of messages and push them into the queue */
-void *producer(void *ptr){
-    int* number = (int*) ptr;
+void* producer(void* ptr) {
+    int* base = ptr;
     for (int i = 0; i < producerMessageCount; ++i) {
-        bounded_buffer_push(&queue, number);
-        printf("Created message %i\n", *number);
-        number++;
+        int* msg = malloc(sizeof(int));
+        *msg = *base + i;   // actual message value
+        bounded_buffer_push(&queue, msg);
+        printf("Created message %d\n", *msg);
     }
+    free(base);
     return NULL;
 }
 
 /* this is the function executed by the consumer thread. 
    It should pop messages from the queue and print them */
-void *consumer(void *ptr){
-    const int* number = (int*) ptr;
+void* consumer(void* ptr) {
+    int* id = ptr;
     for (int i = 0; i < consumerMessageCount; ++i) {
-        const int* popped = bounded_buffer_pop(&queue);
-        printf("Thread %i consumed %i\n", *number, *popped);
+        int* popped = bounded_buffer_pop(&queue);
+        printf("Thread %d consumed %d\n", *id, *popped);
+        free(popped);
     }
+    free(id);
     return NULL;
 }

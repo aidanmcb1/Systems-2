@@ -5,18 +5,19 @@
 /*Do not use any global variables for implementation*/
 
 void bounded_buffer_init(struct bounded_buffer *buffer, int size){
-    buffer->head = nullptr;
+    buffer->head = NULL;
+    buffer->tail = NULL;
     buffer->size = 0;
     buffer->max_size = size;
-    pthread_mutex_init(&buffer->m, nullptr);
-    pthread_cond_init(&buffer->cfull, nullptr);
-    pthread_cond_init(&buffer->cempty, nullptr);
+    pthread_mutex_init(&buffer->m, NULL);
+    pthread_cond_init(&buffer->cfull, NULL);
+    pthread_cond_init(&buffer->cempty, NULL);
 }
 
 void bounded_buffer_push(struct bounded_buffer *buffer, void *item){
     struct node *new_node = (struct node *)malloc(sizeof(struct node));
     new_node->item = item;
-    new_node->next = nullptr;
+    new_node->next = NULL;
 
     pthread_mutex_lock(&buffer->m);
     while (buffer->size == buffer->max_size) {
@@ -24,16 +25,12 @@ void bounded_buffer_push(struct bounded_buffer *buffer, void *item){
     }
 
     if (buffer->head == NULL) {
-        buffer->head = new_node;
-        buffer->size++;
+        buffer->head = buffer->tail = new_node;
     } else {
-        struct node* temp = buffer->head;
-        while (temp->next != NULL) {
-            temp = temp->next;
-        }
-        temp->next = new_node;
-        buffer->size++;
+        buffer->tail->next = new_node;
+        buffer->tail = new_node;
     }
+    buffer->size++;
 
     pthread_cond_signal(&buffer->cempty);
     pthread_mutex_unlock(&buffer->m);
@@ -59,7 +56,10 @@ void* bounded_buffer_pop(struct bounded_buffer *buffer){
 
 void bounded_buffer_destroy(struct bounded_buffer *buffer){
     while (buffer->size != 0) {
-        bounded_buffer_pop(buffer);
+        void* temp = bounded_buffer_pop(buffer);
+        free(temp);
     }
-    free(buffer);
+    pthread_cond_destroy(&buffer->cempty);
+    pthread_mutex_destroy(&buffer->m);
+    pthread_cond_destroy(&buffer->cfull);
 }
