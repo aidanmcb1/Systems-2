@@ -14,6 +14,8 @@ struct bounded_buffer{
     struct node *head;
     int size;
     int max_size;
+    pthread_mutex_t m;
+    pthread_cond_t cfull, cempty;
 };
 
 /* do not change the following function definitions */
