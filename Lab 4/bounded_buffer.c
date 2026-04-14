@@ -4,11 +4,11 @@
 
 /*Do not use any global variables for implementation*/
 
-void bounded_buffer_init(struct bounded_buffer *buffer, int size){
+void bounded_buffer_init(struct bounded_buffer *buffer, int max_size){
     buffer->head = NULL;
     buffer->tail = NULL;
-    buffer->size = 0;
-    buffer->max_size = size;
+    buffer->currentsize = 0;
+    buffer->max_size = max_size;
     pthread_mutex_init(&buffer->m, NULL);
     pthread_cond_init(&buffer->cfull, NULL);
     pthread_cond_init(&buffer->cempty, NULL);
@@ -20,7 +20,7 @@ void bounded_buffer_push(struct bounded_buffer *buffer, void *item){
     new_node->next = NULL;
 
     pthread_mutex_lock(&buffer->m);
-    while (buffer->size == buffer->max_size) {
+    while (buffer->currentsize == buffer->max_size) {
         pthread_cond_wait(&buffer->cfull, &buffer->m);
     }
 
@@ -30,7 +30,7 @@ void bounded_buffer_push(struct bounded_buffer *buffer, void *item){
         buffer->tail->next = new_node;
         buffer->tail = new_node;
     }
-    buffer->size++;
+    buffer->currentsize++;
 
     pthread_cond_signal(&buffer->cempty);
     pthread_mutex_unlock(&buffer->m);
@@ -38,7 +38,7 @@ void bounded_buffer_push(struct bounded_buffer *buffer, void *item){
 
 void* bounded_buffer_pop(struct bounded_buffer *buffer){
     pthread_mutex_lock(&buffer->m);
-    while (buffer->size == 0) {
+    while (buffer->currentsize == 0) {
         pthread_cond_wait(&buffer->cempty, &buffer->m);
     }
 
@@ -46,7 +46,7 @@ void* bounded_buffer_pop(struct bounded_buffer *buffer){
     void* item = temp->item;
     buffer->head = buffer->head->next;
     free(temp);
-    buffer->size--;
+    buffer->currentsize--;
 
     pthread_cond_signal(&buffer->cfull);
     pthread_mutex_unlock(&buffer->m);
@@ -55,7 +55,7 @@ void* bounded_buffer_pop(struct bounded_buffer *buffer){
 }
 
 void bounded_buffer_destroy(struct bounded_buffer *buffer){
-    while (buffer->size != 0) {
+    while (buffer->currentsize != 0) {
         void* temp = bounded_buffer_pop(buffer);
         free(temp);
     }

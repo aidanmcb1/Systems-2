@@ -18,7 +18,7 @@ struct node {
 struct bounded_buffer{
     /* define all necessary variables here */
     struct node *head, *tail;
-    int size;
+    int currentsize;
     int max_size;
     pthread_mutex_t m;
     pthread_cond_t cfull, cempty;
@@ -27,7 +27,7 @@ struct bounded_buffer{
 /* do not change the following function definitions */
 
 /* Initialize a buffer; size is the max number of items in the buffer*/
-void bounded_buffer_init(struct bounded_buffer *buffer, int size);
+void bounded_buffer_init(struct bounded_buffer *buffer, int max_size);
 
 /** Add item to the tail of the buffer. If the buffer is full, wait
  * till the buffer is not full. This function should be thread-safe. */
